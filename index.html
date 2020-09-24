@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="Description" content="Enter your description here" />
+    <link rel='stylesheet'
+        href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css' />
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Prashant Pandey -- Week 03</title>
+</head>
+
+
+<body>
+    <main class="container full-screen-height grid place-center">
+        <div class="row grid place-center">
+            <div class="col-xs-12 input-container">
+                <label for="title">Title</label>
+                <input type="text" name="title" id="title" placeholder="Title">
+            </div>
+            <div class="col-xs-12 input-container">
+                <label for="author">Author</label>
+                <input type="text" name="author" id="author" placeholder="Author">
+            </div>
+            <div class="col-xs-12 input-container button-container">
+                <input type="button" id="sendPost" value="Send" class="btn btn-success">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <ul id="list"></ul>
+            </div>
+        </div>
+    </main>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.js'></script>
+    <script>
+        const lst = document.getElementById('list');
+        const sendPost = () => {
+            const titleInput = document.getElementById('title'), title = titleInput.value,
+                authorInput = document.getElementById('author'), author = authorInput.value;
+            axios.post('http://localhost:3004/posts', { title, author })
+                .then((res) => {
+                    titleInput.value = '';
+                    authorInput.value = '';
+                    appendPost(title, author, lst)
+                }).catch((err) => {
+                    console.log(err);
+                })
+        }, getPosts = () => {
+            axios.get('http://localhost:3004/posts')
+                .then((res) => {
+                    if (res && res.data) {
+                        clearPostList(lst)
+                        res.data.forEach(posts => {
+                            appendPost(posts.title, posts.author, lst)
+                        });
+                    }
+                }).catch((err) => {
+                    console.log(err);
+                });
+        }, clearPostList = (lst) => {
+            lst.innerHTML = ''
+        }, appendPost = (title, author, lst) => {
+            lst.innerHTML += `<li>${title} - ${author}</li>`
+        }, prependPost = (title, author, lst) => {
+            console.log(lst.innerHTML)
+            lst.innerHTML = `<li>${title} - ${author}</li>` + lst.innerHTML;
+        };
+
+        document.getElementById('sendPost').addEventListener('click', (e) => {
+            e.preventDefault();
+            sendPost();
+        });
+
+        getPosts();
+    </script>
+</body>
+
+</html>
